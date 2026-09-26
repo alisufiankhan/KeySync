@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KeySync | Fast, Local-First 2FA Authenticator for Chrome</title>
+  <meta name="description"
+    content="Secure, local-only 2FA authenticator for Chrome. AES-256-GCM client-side encryption, 1-click copy, and instant Google Authenticator QR migration. Zero cloud sync, zero telemetry.">
+
+  <!-- OpenGraph / Social Meta -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="KeySync | Fast, Local-First 2FA Authenticator">
+  <meta property="og:description"
+    content="All your 2FA codes right in your browser toolbar. 100% offline-first, encrypted on your device with AES-256-GCM.">
+  <meta property="og:image" content="assets/promo-marquee.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:creator" content="@aliscodes">
+  <meta name="twitter:title" content="KeySync: 2FA Authenticator">
+  <meta name="twitter:description" content="Stop reaching for your phone. Secure local 2FA in your browser.">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/icon-16.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="assets/icon-128.png">
+
+  <!-- Google Fonts: Outfit, Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- Floating Copy Toast Demo -->
+  <div id="demo-toast" class="demo-toast-pill"
+    style="position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(40px); opacity: 0; pointer-events: none; transition: all 0.22s ease; z-index: 9999; background: #111827; color: #FFFFFF; border: 1px solid rgba(255,255,255,0.15); padding: 8px 18px; border-radius: 9999px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#10B981" stroke-width="2.5"
+      stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+    <span>Copied 2FA Code to Clipboard!</span>
+  </div>
+
+  <style>
+    #demo-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+
+  <!-- ========================================== -->
+  <!-- NAVIGATION BAR                             -->
+  <!-- ========================================== -->
+  <nav class="site-nav">
+    <div class="container nav-inner">
+      <a href="#" class="brand-link" aria-label="KeySync Home">
+        <div class="brand-icon-wrap">
+          <img src="assets/icon-48.png" alt="KeySync Logo">
+        </div>
+        <span>KeySync</span>
+        <span class="brand-version">v1.0.0</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">Migration</a>
+        <a href="#security">Security</a>
+        <a href="#comparison">Compare</a>
+        <a href="#faq">FAQ</a>
+      </div>
+
+      <div class="nav-cta-group">
+        <a href="https://github.com/alisufiankhan/KeySync" target="_blank" rel="noopener noreferrer" class="btn btn-outline"
+          title="GitHub Repository">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path
+              d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+          </svg>
+          <span>Source</span>
+        </a>
+        <a href="#install" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" />
+          </svg>
+          <span>Add to Chrome</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ========================================== -->
+  <!-- HERO SECTION                               -->
+  <!-- ========================================== -->
+  <header class="hero-section">
+    <div class="container">
+      <h1 class="hero-title">
+        <span class="hero-title-light">2FA in your browser.</span>
+        <span class="hero-title-bold blue-emphasis">Not on your phone.</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        Stop pulling out your phone every 10 minutes. KeySync securely encrypts and auto-refreshes your 2FA tokens
+        directly inside your Chrome toolbar with instant 1-click clipboard copy.
+      </p>
+
+      <div class="hero-cta-wrapper" id="install">
+        <a href="https://chrome.google.com/webstore" target="_blank" rel="noopener noreferrer"
+          class="btn btn-primary btn-lg">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Add to Chrome (Free)</span>
+        </a>
+        <a href="#features" class="btn btn-secondary btn-lg">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="10 8 16 12 10 16 10 8"></polygon>
+          </svg>
+          <span>Explore Features</span>
+        </a>
+      </div>
+
+      <div class="hero-guarantee">
+        <span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#10B981" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg> No Account Required</span>
+        <span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#10B981" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg> 1-Click Google Authenticator Import</span>
+        <span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#10B981" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg> Zero Telemetry or Tracking</span>
+      </div>
+
+      <!-- Real Browser Showcase Window Frame -->
+      <div class="hero-showcase">
+        <div class="showcase-glow"></div>
+        <div class="showcase-window">
+          <!-- Browser Top Window Bar -->
+          <div class="window-header">
+            <div class="window-dots">
+              <span class="window-dot dot-red"></span>
+              <span class="window-dot dot-yellow"></span>
+              <span class="window-dot dot-green"></span>
+            </div>
+            <div class="window-address">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <span>chrome-extension://keysync/popup.html</span>
+            </div>
+            <div class="window-toolbar-icons">
+              <div class="extension-pin-badge">
+                <img src="assets/icon-32.png" alt="KeySync">
+                <span>KeySync Pinned</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Showcase Body -->
+          <div class="showcase-body">
+            <div class="showcase-narrative">
+              <span class="narrative-tag">Real Production UI</span>
+              <h2 class="narrative-headline">Your entire 2FA vault,<br>one click away.</h2>
+              <p class="narrative-desc">
+                Clean, flat, ultra-fast design. KeySync automatically categorizes your services, pulls official brand
+                logos, and ticks in real-time with zero system lag.
+              </p>
+              <div class="narrative-features">
+                <div class="narrative-item">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span><strong>Instant 1-Click Copy:</strong> Click any code to copy directly to clipboard.</span>
+                </div>
+                <div class="narrative-item">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span><strong>Automatic Brand Icons:</strong> GitHub, Stripe, Binance, AWS, and cached
+                    favicons.</span>
+                </div>
+                <div class="narrative-item">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span><strong>Real-Time Search:</strong> Instant filtering as you type.</span>
+                </div>
+              </div>
+              <div style="margin-top: 14px;">
+                <button type="button" class="btn btn-primary demo-copy-trigger" data-code="601 065">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span>Try Copying a Demo Code</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Actual Extension Screenshot -->
+            <div class="mockup-extension-card">
+              <img src="assets/sc-main.png" alt="KeySync Real Extension View with TOTP codes" width="370">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- PROBLEM VS SOLUTION (THE 2FA DILEMMA)        -->
+  <!-- ========================================== -->
+  <section class="section" id="comparison">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Workflow Evolution</span>
+        <h2 class="section-title">Why another 2FA app? Because phone authenticators break your focus.</h2>
+        <p class="section-desc">
+          Authenticators were designed for mobile phones in 2011. In 2026, engineers, designers, and founders log into
+          AWS, GitHub, Stripe, and Discord from their desktop computers all day long.
+        </p>
+
+        <!-- Speed & Friction Metric Pills -->
+        <div class="comparison-speed-pill-wrap">
+          <div class="speed-pill speed-pill-bad">
+            <span class="speed-dot dot-bad"></span>
+            <span>Phone Apps: <strong>~35-45s</strong> &amp; 4 context breaks</span>
+          </div>
+          <div class="speed-arrow">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </div>
+          <div class="speed-pill speed-pill-good">
+            <span class="speed-dot dot-good"></span>
+            <span>KeySync: <strong>1.2s</strong> in 1 toolbar click</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="comparison-grid">
+        <!-- The Bad Old Way -->
+        <div class="comparison-card bad">
+          <div class="card-status-badge badge-warning">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>The Traditional Friction</span>
+          </div>
+
+          <h3 class="comparison-heading">The 10-Minute Phone Dance</h3>
+          <p class="comparison-card-subtitle">Constant interruptions, timer anxiety, and single-point-of-failure risk.
+          </p>
+
+          <!-- Interactive Visual Timeline -->
+          <div class="friction-timeline">
+            <div class="timeline-step">
+              <span class="step-num">1</span>
+              <span class="step-text">Pick up phone &amp; unlock (FaceID fails)</span>
+            </div>
+            <div class="timeline-step">
+              <span class="step-num">2</span>
+              <span class="step-text">Search &amp; scroll through dozens of apps</span>
+            </div>
+            <div class="timeline-step">
+              <span class="step-num">3</span>
+              <span class="step-text">Memorize 6 digits &amp; rush to browser</span>
+            </div>
+            <div class="timeline-step step-expired">
+              <span class="step-num">
+                <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </span>
+              <span class="step-text">Code expired at 29s... repeat again!</span>
+            </div>
+          </div>
+
+          <div class="comparison-feature-list">
+            <div class="comparison-feature-item">
+              <div class="feature-icon-box icon-box-bad">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                  <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                </svg>
+              </div>
+              <div>
+                <div class="feature-item-title">Focus &amp; Flow State Destroyer</div>
+                <p class="feature-item-desc">Pulling your phone out 20–30 times a day shatters developer momentum and
+                  creates needless friction.</p>
+              </div>
+            </div>
+
+            <div class="comparison-feature-item">
+              <div class="feature-icon-box icon-box-bad">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+              </div>
+              <div>
+                <div class="feature-item-title">30-Second Countdown Panic</div>
+                <p class="feature-item-desc">Frantically transcribing digits while glancing back and forth between your
+                  phone screen and laptop.</p>
+              </div>
+            </div>
+
+            <div class="comparison-feature-item">
+              <div class="feature-icon-box icon-box-bad">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </div>
+              <div>
+                <div class="feature-item-title">Cloud Lock-In &amp; Sync Leaks</div>
+                <p class="feature-item-desc">Major cloud authenticators sync plaintext secrets to remote servers or
+                  commercial telemetry networks.</p>
+              </div>
+            </div>
+
+            <div class="comparison-feature-item">
+              <div class="feature-icon-box icon-box-bad">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                  </path>
+                  <line x1="12" y1="9" x2="12" y2="13"></line>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+              </div>
+              <div>
+                <div class="feature-item-title">The Lost Phone Catastrophe</div>
+                <p class="feature-item-desc">A broken phone screen or stolen device permanently locks you out of your
+                  critical production accounts.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- The KeySync Way -->
+        <div class="comparison-card good">
+          <div class="floating-highlight-badge">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            <span>10x Faster Workflow</span>
+          </div>
+
+          <div class="card-status-badge badge-success">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>Native Browser Superpower</span>
+          </div>
+
+          <h3 class="comparison-heading">1.2 Seconds. Right Where You Work.</h3>
+          <p class="comparison-card-subtitle">Local-only, client-side encrypted, keyboard-first 2FA toolbar.</p>
+
+          <!-- Interactive Live Preview Widget Inside the Card -->
+          <div class="keysync-live-preview-box">
+            <div class="live-preview-header">
+              <div class="live-preview-brand">
+                <img src="assets/icon-32.png" width="18" height="18" alt="KeySync">
+                <span>KeySync Quick Bar</span>
+              </div>
+              <span class="live-shortcut-tag"><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>K</kbd></span>
+            </div>
+
+            <div class="live-token-interactive demo-copy-trigger" data-code="837 304"
+              title="Click to copy live demo code">
+              <div class="live-token-info">
+                <div class="live-token-logo">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="#635BFF">
+                    <path
+                      d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697.5 12.522.5 6.046.5 2.05 3.864 2.05 9.429c0 5.484 4.57 6.942 8.784 8.528 2.378.89 3.197 1.574 3.197 2.535 0 .973-.852 1.517-2.298 1.517-2.316 0-5.163-1.077-7.142-2.164l-.941 5.568c2.083 1.055 5.12 1.637 8.358 1.637 6.643 0 10.748-3.155 10.748-8.899 0-5.385-4.408-7.072-8.78-8.999z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="live-token-service">Stripe Payments</div>
+                  <div class="live-token-account">billing@company.com</div>
+                </div>
+              </div>
+              <div class="live-token-code-wrap">
+                <span class="live-totp-digits" id="comparison-stripe-code">837 304</span>
+                <span class="live-copy-action">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span>Click to Copy</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="live-preview-footer">
+              <div class="live-sync-indicator">
+                <span class="live-pulse-dot"></span>
+                <span>Active 30s Epoch Sync</span>
+              </div>
+              <span class="live-benchmark-text">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                <span>1.2s total time • 0 phone pickups</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="comparison-feature-list">
+            <div class="comparison-feature-item">
+              <div class="feature-icon-box icon-box-good">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+              </div>
+              <div>
+                <div class="feature-item-title">Hands Never Leave Keyboard</div>
+                <p class="feature-item-desc">Press your configurable shortcut or click the pinned toolbar badge. Codes
+                  appear instantly.</p>
+              </div>
+            </div>
+
+            <div class="comparison-feature-item">
+              <div class="feature-icon-box icon-box-good">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </div>
+              <div>
+                <div class="feature-item-title">1-Click Clipboard Injection</div>
+                <p class="feature-item-desc">Click any account row to automatically inject the fresh 6-digit TOTP code
+                  into your clipboard with instant toast feedback.</p>
+              </div>
+            </div>
+
+            <div class="comparison-feature-item">
+              <div class="feature-icon-box icon-box-good">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <polyline points="9 12 11 14 15 10"></polyline>
+                </svg>
+              </div>
+              <div>
+                <div class="feature-item-title">True Air-Gapped Encryption</div>
+                <p class="feature-item-desc">Encrypted with AES-256-GCM and PBKDF2 (100,000 rounds). Keys live in
+                  volatile RAM only during your active session.</p>
+              </div>
+            </div>
+
+            <div class="comparison-feature-item">
+              <div class="feature-icon-box icon-box-good">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+              </div>
+              <div>
+                <div class="feature-item-title">100% Vault Sovereignty</div>
+                <p class="feature-item-desc">One-click unencrypted JSON backup export &amp; restore whenever you want.
+                  You are never trapped or dependent on a vendor.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- REAL SCREENSHOT WALKTHROUGH TABS           -->
+  <!-- ========================================== -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Interactive Showcase</span>
+        <h2 class="section-title">Engineered for speed, privacy, and simplicity.</h2>
+        <p class="section-desc">
+          Explore the exact interface you'll be using. Real production captures with zero mock filters.
+        </p>
+      </div>
+
+      <div class="features-container">
+        <!-- Tab Navigation -->
+        <div class="feature-tabs-nav" role="tablist">
+          <button type="button" class="feature-tab-btn active" data-tab="tab-main" role="tab" aria-selected="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span>Authenticator Codes</span>
+          </button>
+          <button type="button" class="feature-tab-btn" data-tab="tab-import" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <span>Google Auth Import</span>
+          </button>
+          <button type="button" class="feature-tab-btn" data-tab="tab-settings" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+              </path>
+            </svg>
+            <span>Auto-Lock & Backup</span>
+          </button>
+          <button type="button" class="feature-tab-btn" data-tab="tab-add" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Manual Add</span>
+          </button>
+        </div>
+
+        <!-- TAB 1: Main View -->
+        <div class="feature-tab-panel active" id="tab-main">
+          <div class="panel-content">
+            <span class="panel-tag">Core Workflow</span>
+            <h3 class="panel-title">Copy your 2FA code in one painless click.</h3>
+            <p class="panel-desc">
+              KeySync shows all your active accounts with live 30-second epoch synchronized timers. Search instantly
+              across dozens of accounts and click any card to copy.
+            </p>
+            <ul class="panel-points">
+              <li>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span><strong>Instant Clipboard:</strong> Tap a code, paste into your browser. Done in 1.2s.</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span><strong>Smart Domain Favicons:</strong> Automatically detects brand logos or caches high-res
+                  domain favicons.</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span><strong>Precise Epoch Sync:</strong> Never misses an epoch boundary or gets out of sync with
+                  servers.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="panel-media-wrap">
+            <img src="assets/sc-main.png" alt="KeySync Main TOTP Screen" loading="lazy">
+          </div>
+        </div>
+
+        <!-- TAB 2: Bulk Import -->
+        <div class="feature-tab-panel" id="tab-import">
+          <div class="panel-content">
+            <span class="panel-tag" id="how-it-works">Effortless Migration</span>
+            <h3 class="panel-title">Migrate from Google Authenticator in 10 seconds.</h3>
+            <p class="panel-desc">
+              Moving your accounts shouldn't take an afternoon of manual typing. Export your accounts in Google
+              Authenticator, take a screenshot, and drop it here.
+            </p>
+            <ul class="panel-points">
+              <li>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span><strong>Drag & Drop QR:</strong> Accepts screenshot images or raw Google migration URLs.</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span><strong>Multi-Part Batch Exports:</strong> Handles split QR codes (e.g. 1 of 2, 2 of 2)
+                  seamlessly.</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span><strong>Interactive Selection:</strong> Review each account before importing to your vault.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="panel-media-wrap">
+            <img src="assets/sc-bulk-import.png" alt="Google Authenticator QR Bulk Import Screen" loading="lazy">
+          </div>
+        </div>
+
+        <!-- TAB 3: Settings & Backup -->
+        <div class="feature-tab-panel" id="tab-settings">
+          <div class="panel-content">
+            <span class="panel-tag">Security & Freedom</span>
+            <h3 class="panel-title">Session Auto-Lock & Zero Lock-in Backups.</h3>
+            <p class="panel-desc">
+              Configure your auto-lock timer to lock KeySync when idle (Immediately, 5m, 15m, 30m, or on browser close).
+              Export your raw JSON backup whenever you choose.
+            </p>
+            <ul class="panel-points">
+              <li>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span><strong>In-Memory Key Storage:</strong> Session keys live in volatile RAM
+                  (<code>chrome.storage.session</code>), never on disk.</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span><strong>Master PIN Security:</strong> Rate limiting protects against local brute-force
+                  attempts.</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span><strong>1-Click JSON Vault Export:</strong> Restore to any machine or archive safely
+                  offline.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="panel-media-wrap">
+            <img src="assets/sc-settings.png" alt="KeySync Settings & Backup Screen" loading="lazy">
+          </div>
+        </div>
+
+        <!-- TAB 4: Manual Add -->
+        <div class="feature-tab-panel" id="tab-add">
+          <div class="panel-content">
+            <span class="panel-tag">Precision Input</span>
+            <h3 class="panel-title">Add any custom service with smart auto-formatting.</h3>
+            <p class="panel-desc">
+              Pasting a raw Base32 secret? KeySync automatically removes accidental spaces, validates key length, and
+              maps to official brand icons instantly.
+            </p>
+            <ul class="panel-points">
+              <li>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span><strong>Space & Case Stripping:</strong> Never fails on messy clipboard pastes.</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span><strong>Custom Email & Issuer:</strong> Keep multi-organization logins neatly organized.</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span><strong>Standard RFC 6238 TOTP:</strong> 100% compatible with every service in the world.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="panel-media-wrap">
+            <img src="assets/sc-add-account.png" alt="KeySync Add Account Screen" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- SECURITY ARCHITECTURE                      -->
+  <!-- ========================================== -->
+  <section class="section" id="security">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Zero-Knowledge Architecture</span>
+        <h2 class="section-title">No black boxes. Here is exactly how your keys are protected.</h2>
+        <p class="section-desc">
+          KeySync doesn't have a backend. We don't have user databases, API endpoints, or analytics dashboards. Your
+          secret keys are encrypted client-side by your CPU.
+        </p>
+      </div>
+
+      <div class="security-grid">
+        <div class="security-card">
+          <div class="security-icon-pill icon-blue">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <h3 class="security-card-title">AES-256-GCM</h3>
+          <p class="security-card-desc">
+            Industry standard authenticated symmetric encryption. Each time your vault is written to disk, a fresh
+            cryptographically random 12-byte initialization vector (IV) is generated.
+          </p>
+        </div>
+
+        <div class="security-card">
+          <div class="security-icon-pill icon-emerald">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <h3 class="security-card-title">PBKDF2 Key Derivation</h3>
+          <p class="security-card-desc">
+            Your 4-digit PIN is stretched into an encryption key using 100,000 iterations of PBKDF2 with SHA-256 and a
+            16-byte random salt, making brute-force attacks computationally infeasible.
+          </p>
+        </div>
+
+        <div class="security-card">
+          <div class="security-icon-pill icon-purple">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+              </path>
+            </svg>
+          </div>
+          <h3 class="security-card-title">Zero Cloud Leaks</h3>
+          <p class="security-card-desc">
+            KeySync has 0 remote analytics, 0 tracking cookies, and 0 external servers. The only outbound HTTP calls are
+            public Google Favicon lookups for custom domain icons.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- COMPETITIVE COMPARISON MATRIX              -->
+  <!-- ========================================== -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Direct Comparison</span>
+        <h2 class="section-title">How KeySync compares to alternatives</h2>
+        <p class="section-desc">
+          Honest, side-by-side feature comparison between popular 2FA authenticators.
+        </p>
+      </div>
+
+      <div class="matrix-wrap">
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th class="matrix-feature-th">
+                <span class="matrix-th-title">Core Capabilities</span>
+              </th>
+              <th class="matrix-keysync-th">
+                <div class="col-brand-header">
+                  <div class="col-brand-icon-box">
+                    <img src="assets/icon-32.png" width="22" height="22" alt="KeySync">
+                  </div>
+                  <div class="col-brand-info">
+                    <div class="col-brand-title">KeySync</div>
+                    <span class="col-brand-badge">
+                      <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                      <span>Recommended</span>
+                    </span>
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="col-brand-header col-brand-subtle">
+                  <div class="col-brand-avatar avatar-google">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                      <path
+                        d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.93V18h-2v-1.07A6 6 0 0 1 6.07 12H7a5 5 0 0 0 9 0h.93A6 6 0 0 1 13 16.93zM12 7a5 5 0 0 0-4.9 4h-1A6 6 0 0 1 11 6.07V5h2v1.07A6 6 0 0 1 17.9 11h-.9A5 5 0 0 0 12 7z" />
+                    </svg>
+                  </div>
+                  <div class="col-brand-info">
+                    <div class="col-brand-name">Google Auth</div>
+                    <span class="col-brand-caption">Mobile Only</span>
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="col-brand-header col-brand-subtle">
+                  <div class="col-brand-avatar avatar-authy">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                      <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 15c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z" />
+                    </svg>
+                  </div>
+                  <div class="col-brand-info">
+                    <div class="col-brand-name">Twilio Authy</div>
+                    <span class="col-brand-caption">Cloud Desktop Deprecated</span>
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="col-brand-header col-brand-subtle">
+                  <div class="col-brand-avatar avatar-cloud">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                  </div>
+                  <div class="col-brand-info">
+                    <div class="col-brand-name">Cloud Vaults</div>
+                    <span class="col-brand-caption">1Password, Bitwarden</span>
+                  </div>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="feature-cell">
+                <div class="feature-cell-title">Direct Browser Toolbar Access</div>
+                <div class="feature-cell-desc">Hotkeys &amp; instant popup without reaching for your phone</div>
+              </td>
+              <td class="keysync-cell">
+                <div class="status-pill status-win">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Native Toolbar</span>
+                </div>
+              </td>
+              <td>
+                <div class="status-pill status-loss">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  <span>Phone Only</span>
+                </div>
+              </td>
+              <td>
+                <div class="status-pill status-loss">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  <span>Desktop Deprecated</span>
+                </div>
+              </td>
+              <td>
+                <div class="status-pill status-neutral">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Via Extension</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="feature-cell">
+                <div class="feature-cell-title">100% Local-Only Storage</div>
+                <div class="feature-cell-desc">Hardware AES-256-GCM encryption on your device only</div>
+              </td>
+              <td class="keysync-cell">
+                <div class="status-pill status-win">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Zero Cloud Sync</span>
+                </div>
+              </td>
+              <td>
+                <div class="status-pill status-loss">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  <span>Google Cloud Sync</span>
+                </div>
+              </td>
+              <td>
+                <div class="status-pill status-loss">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  <span>Twilio Cloud Sync</span>
+                </div>
+              </td>
+              <td>
+                <div class="status-pill status-loss">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  <span>Stored on Remote DBs</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="feature-cell">
+                <div class="feature-cell-title">1-Click Google Auth QR Migration</div>
+                <div class="feature-cell-desc">Bulk import accounts from Google Authenticator QR screenshot</div>
+              </td>
+              <td class="keysync-cell">
+                <div class="status-pill status-win">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Instant Batch Drop</span>
+                </div>
+              </td>
+              <td>
+                <div class="status-pill status-muted">
+                  <span>N/A</span>
+                </div>
+              </td>
+              <td>
+                <div class="status-pill status-loss">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  <span>Manual Entry Only</span>
+                </div>
+              </td>
+              <td>
+                <div class="status-pill status-loss">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  <span>Manual One-by-One</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="feature-cell">
+                <div class="feature-cell-title">No Account / Login Required</div>
+                <div class="feature-cell-desc">Zero emails, phone numbers, or account registrations needed</div>
+              </td>
+              <td class="keysync-cell">
+                <div class="status-pill status-win">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>100% Anonymous</span>
+                </div>
+              </td>
+              <td>
+                <div class="status-pill status-loss">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  <span>Google Account</span>
+                </div>
+              </td>
+              <td>
+                <div class="status-pill status-loss">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  <span>SMS Phone Required</span>
+                </div>
+              </td>
+              <td>
+                <div class="status-pill status-loss">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  <span>Master Login &amp; Email</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="feature-cell">
+                <div class="feature-cell-title">Free &amp; Open Source Core</div>
+                <div class="feature-cell-desc">Auditable client-side code with MIT licensing and zero paywalls</div>
+              </td>
+              <td class="keysync-cell">
+                <div class="status-pill status-win">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Free &amp; Auditable (MIT)</span>
+                </div>
+              </td>
+              <td>
+                <div class="status-pill status-neutral">
+                  <span>Free (Proprietary)</span>
+                </div>
+              </td>
+              <td>
+                <div class="status-pill status-neutral">
+                  <span>Free (Proprietary)</span>
+                </div>
+              </td>
+              <td>
+                <div class="status-pill status-loss">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  <span>$36 – $60 / year</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="feature-cell">
+                <div class="feature-cell-title">Unencrypted JSON Backup Export</div>
+                <div class="feature-cell-desc">Full data sovereignty to export or migrate your raw TOTP secrets</div>
+              </td>
+              <td class="keysync-cell">
+                <div class="status-pill status-win">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Full Data Freedom</span>
+                </div>
+              </td>
+              <td>
+                <div class="status-pill status-loss">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  <span>QR Screen Only</span>
+                </div>
+              </td>
+              <td>
+                <div class="status-pill status-loss">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                  <span>Locked In</span>
+                </div>
+              </td>
+              <td>
+                <div class="status-pill status-neutral">
+                  <span>Varies by Provider</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Developer Signature & Attribution -->
+      <div class="dev-signature-card">
+        <div class="dev-info">
+          <div class="dev-avatar">
+            <img src="assets/ali-sufian.jpg" alt="Ali Sufian" width="54" height="54" loading="lazy">
+          </div>
+          <div class="dev-text-meta">
+            <h4>Crafted by Ali Sufian</h4>
+            <p>Software Engineer • Building high-performance, local-first developer tools</p>
+          </div>
+        </div>
+        <div>
+          <a href="https://x.com/aliscodes" target="_blank" rel="noopener noreferrer" class="btn btn-secondary"
+            title="Follow Ali Sufian on X">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path
+                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+            <span>Follow @aliscodes on X</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- FAQ ACCORDION                              -->
+  <!-- ========================================== -->
+  <section class="section" id="faq">
+    <div class="container container-narrow">
+      <div class="section-header">
+        <span class="section-tag">Frequently Asked Questions</span>
+        <h2 class="section-title">Everything you need to know</h2>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item open">
+          <button type="button" class="faq-question">
+            <span>Is KeySync really 100% free and offline?</span>
+            <svg class="faq-chevron" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer">
+            Yes. KeySync is 100% free with no subscriptions, in-app purchases, or telemetry tracking. All encryption and
+            TOTP calculations happen directly on your CPU inside the browser. No servers, no accounts.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button type="button" class="faq-question">
+            <span>Where are my secret keys stored?</span>
+            <svg class="faq-chevron" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer">
+            Your secrets are encrypted using AES-256-GCM and saved locally in Chrome's sandboxed extension storage
+            (<code>chrome.storage.local</code>). Unencrypted secrets are never saved to disk. When unlocked, temporary
+            session keys live exclusively in volatile RAM (<code>chrome.storage.session</code>) and are erased upon
+            auto-lock or browser exit.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button type="button" class="faq-question">
+            <span>Can websites read my 2FA codes?</span>
+            <svg class="faq-chevron" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer">
+            No. Chrome extensions run inside strictly isolated sandboxes. Websites you visit have zero access to
+            KeySync's memory, storage, or interface. Only you can view or copy codes when opening the extension popup.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button type="button" class="faq-question">
+            <span>What happens if I forget my Master PIN?</span>
+            <svg class="faq-chevron" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer">
+            Because KeySync uses true zero-knowledge encryption, your PIN is the literal cryptographic key that decrypts
+            your vault. If lost, your vault cannot be decrypted by anyone. We strongly recommend using the
+            <strong>Export JSON Backup</strong> feature in Settings to store an encrypted or offline copy in a secure
+            location.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button type="button" class="faq-question">
+            <span>How do I migrate my codes from Google Authenticator?</span>
+            <svg class="faq-chevron" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="faq-answer">
+            In Google Authenticator, tap the menu &gt; Transfer accounts &gt; Export accounts. Take a screenshot of the QR
+            code, open KeySync's Bulk Import screen, and drop the screenshot image. KeySync automatically reads the
+            migration payload and imports all accounts at once.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- FINAL CTA BANNER                           -->
+  <!-- ========================================== -->
+  <section class="section">
+    <div class="container">
+      <div class="cta-banner">
+        <h2 class="cta-title">Ready to ditch the phone dance?</h2>
+        <p class="cta-desc">
+          Install KeySync in 10 seconds. Import your codes, configure your PIN, and never pull your phone out for a 2FA
+          code again.
+        </p>
+        <div class="hero-cta-wrapper" style="margin-bottom: 0;">
+          <a href="#install" class="btn btn-primary btn-lg">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Add KeySync to Chrome (Free)</span>
+          </a>
+          <a href="https://github.com/alisufiankhan/KeySync" target="_blank" rel="noopener noreferrer"
+            class="btn btn-secondary btn-lg">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path
+                d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+            </svg>
+            <span>Star on GitHub</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- FOOTER                                     -->
+  <!-- ========================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <img src="assets/icon-32.png" alt="KeySync">
+          <span>KeySync Authenticator</span>
+        </div>
+        <div class="footer-nav">
+          <a href="#features">Features</a>
+          <a href="#security">Security</a>
+          <a href="#comparison">Compare</a>
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="https://x.com/aliscodes" target="_blank" rel="noopener noreferrer">@aliscodes</a>
+          <a href="https://github.com/alisufiankhan/KeySync" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>
+          <span>© <span id="current-year">2026</span> KeySync • Built by <a href="https://x.com/aliscodes"
+              target="_blank" rel="noopener noreferrer" style="color: #60A5FA; font-weight: 600;">Ali Sufian</a>.</span>
+        </div>
+        <div>
+          <span>Zero cloud trackers. Zero telemetry. Client-side encrypted.</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+
+</html>

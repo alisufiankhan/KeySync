@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "KeySync - TOTP Authenticator",
+  "version": "1.0.0",
+  "description": "Secure, local-only 2FA TOTP authenticator with PIN encryption and Google Authenticator QR import.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "permissions": [
+    "storage"
+  ],
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; img-src 'self' data: https://t1.gstatic.com https://www.google.com;"
+  }
+}

@@ -1,0 +1,27 @@
+# Operating System & Editor Files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Vercel Build Artifacts
+.vercel/
+node_modules/
+
+# Distribution Archives & Upload Zips
+*.zip
+dist_chrome_extension/
+
+# Internal Store Assets & Screenshots
+store_assets/
+
+# LLM Discovery & Scraping Files (Excluded per user request)
+llms.txt
+llms-full.txt
+docs/llms.txt
+docs/llms-full.txt
+robots.txt
+docs/robots.txt
+sitemap.xml
+docs/sitemap.xml
