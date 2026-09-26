@@ -131,11 +131,13 @@ button {
   transition: all var(--transition-fast);
 }
 
-.nav-inner {
+.nav-inner,
+.nav-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 70px;
+  gap: 20px;
 }
 
 .brand-link {
