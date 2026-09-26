@@ -1211,16 +1211,16 @@ button {
    ========================================================================== */
 .matrix-wrap {
   overflow-x: auto;
-  border: 1px solid var(--border-card);
-  border-radius: 20px;
-  background: var(--bg-surface);
-  box-shadow: 0 16px 44px -8px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.04);
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  background: #FFFFFF;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
   -webkit-overflow-scrolling: touch;
 }
 
 .matrix-table {
   width: 100%;
-  min-width: 860px;
+  min-width: 840px;
   border-collapse: separate;
   border-spacing: 0;
   text-align: left;
@@ -1229,9 +1229,9 @@ button {
 
 /* Headers */
 .matrix-table th {
-  padding: 22px 20px;
-  background: #F8FAFC;
-  border-bottom: 1px solid var(--border-card);
+  padding: 18px 22px;
+  background: #FAFAFA;
+  border-bottom: 1px solid #E2E8F0;
   font-family: var(--font-heading);
   vertical-align: middle;
 }
@@ -1244,27 +1244,27 @@ button {
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: var(--text-muted);
+  letter-spacing: 0.6px;
+  color: #64748B;
 }
 
 /* Brand Header Containers */
 .col-brand-header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .col-brand-icon-box {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   background: #FFFFFF;
-  border-radius: 10px;
-  border: 1px solid rgba(37, 99, 235, 0.2);
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   flex-shrink: 0;
 }
 
@@ -1275,32 +1275,32 @@ button {
 }
 
 .col-brand-title {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--accent-blue);
+  font-size: 15px;
+  font-weight: 700;
+  color: #0F172A;
   line-height: 1.2;
 }
 
 .col-brand-badge {
   display: inline-block;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  color: #1D4ED8;
-  background: rgba(37, 99, 235, 0.12);
-  padding: 2px 7px;
-  border-radius: var(--radius-full);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #2563EB;
+  background: #EFF6FF;
+  border: 1px solid #DBEAFE;
+  padding: 1px 6px;
+  border-radius: 9999px;
   width: fit-content;
 }
 
 .col-brand-subtle {
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 .col-brand-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1308,7 +1308,7 @@ button {
 }
 
 .avatar-google {
-  background: #F1F5F9;
+  background: #F8FAFC;
   color: #4285F4;
   border: 1px solid #E2E8F0;
 }
@@ -1326,43 +1326,35 @@ button {
 }
 
 .col-brand-name {
-  font-size: 14.5px;
-  font-weight: 700;
-  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 600;
+  color: #1E293B;
   line-height: 1.2;
 }
 
 .col-brand-caption {
   font-size: 11px;
-  color: var(--text-muted);
-  font-weight: 500;
+  color: #94A3B8;
+  font-weight: 400;
 }
 
-/* KeySync Column Hero Highlights */
+/* KeySync Column (Gentle clean tint, ZERO blue border lines) */
 .matrix-table th.matrix-keysync-th {
-  background: linear-gradient(180deg, rgba(37, 99, 235, 0.08) 0%, rgba(37, 99, 235, 0.03) 100%);
-  border-left: 2px solid rgba(37, 99, 235, 0.35);
-  border-right: 2px solid rgba(37, 99, 235, 0.35);
-  border-top: 3px solid var(--accent-blue);
+  background: #F8FAFC;
   width: 22%;
+  border-bottom: 1px solid #E2E8F0;
 }
 
 .matrix-table td.keysync-cell {
-  background: rgba(37, 99, 235, 0.025);
-  border-left: 2px solid rgba(37, 99, 235, 0.3);
-  border-right: 2px solid rgba(37, 99, 235, 0.3);
-}
-
-.matrix-table tr:last-child td.keysync-cell {
-  border-bottom: 2px solid rgba(37, 99, 235, 0.3);
+  background: #F8FAFC;
 }
 
 /* Rows & Cells */
 .matrix-table td {
-  padding: 16px 20px;
+  padding: 16px 22px;
   border-bottom: 1px solid #F1F5F9;
   vertical-align: middle;
-  transition: background-color var(--transition-fast);
+  transition: background-color 0.15s ease;
 }
 
 .matrix-table tbody tr:hover td {
@@ -1370,79 +1362,60 @@ button {
 }
 
 .matrix-table tbody tr:hover td.keysync-cell {
-  background-color: rgba(37, 99, 235, 0.06);
+  background-color: #F1F5F9;
 }
 
 .feature-cell {
-  padding-right: 24px;
+  padding-right: 20px;
 }
 
 .feature-cell-title {
   font-size: 14px;
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 600;
+  color: #0F172A;
   margin-bottom: 2px;
 }
 
 .feature-cell-desc {
   font-size: 12px;
-  color: var(--text-muted);
+  color: #64748B;
   line-height: 1.4;
 }
 
-/* Status Pills */
-.status-pill {
+/* Clean, Human Value Displays (No Bulky Pills!) */
+.feature-status {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 6px 12px;
-  border-radius: var(--radius-full);
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: 13.5px;
   white-space: nowrap;
-  transition: all var(--transition-fast);
 }
 
-.status-win {
-  background: rgba(5, 150, 105, 0.09);
-  color: #059669;
-  border: 1px solid rgba(5, 150, 105, 0.22);
-  font-weight: 700;
+.status-yes {
+  color: #047857;
+  font-weight: 600;
 }
 
-.status-win svg {
-  color: #059669;
+.status-yes .status-icon {
+  color: #10B981;
   flex-shrink: 0;
 }
 
-.status-loss {
-  background: rgba(244, 63, 94, 0.06);
-  color: #E11D48;
-  border: 1px solid rgba(244, 63, 94, 0.18);
+.status-no {
+  color: #64748B;
   font-weight: 500;
 }
 
-.status-loss svg {
-  color: #E11D48;
+.status-no .status-icon {
+  color: #94A3B8;
   flex-shrink: 0;
 }
 
-.status-neutral {
-  background: #F1F5F9;
-  color: var(--text-secondary);
-  border: 1px solid #E2E8F0;
+.status-text {
+  font-size: 13px;
+  color: #64748B;
   font-weight: 500;
-}
-
-.status-neutral svg {
-  color: var(--accent-blue);
-  flex-shrink: 0;
-}
-
-.status-muted {
-  color: var(--text-faint);
-  font-size: 12.5px;
-  font-weight: 500;
+  white-space: nowrap;
 }
 
 /* ==========================================================================
