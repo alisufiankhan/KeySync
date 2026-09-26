@@ -2174,3 +2174,281 @@ button {
     flex-direction: column;
   }
 }
+/* ==========================================================================
+   MOBILE RESPONSIVE — TABLET (max-width: 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+
+  /* Navigation */
+  .nav-links {
+    display: none;
+  }
+
+  .nav-cta-group .btn-ghost {
+    display: none;
+  }
+
+  /* Hero */
+  .hero-section {
+    padding-top: 100px;
+    padding-bottom: 60px;
+    text-align: center;
+  }
+
+  .hero-title {
+    font-size: clamp(32px, 9vw, 48px);
+  }
+
+  .hero-subtitle {
+    font-size: 16px;
+    max-width: 100%;
+  }
+
+  .hero-cta-wrapper {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero-cta-wrapper .btn {
+    width: 100%;
+    max-width: 320px;
+    justify-content: center;
+  }
+
+  .hero-guarantee {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+
+  /* Hero showcase — stack vertically */
+  .showcase-body {
+    grid-template-columns: 1fr;
+    padding: 24px 20px;
+    gap: 28px;
+    text-align: center;
+  }
+
+  .showcase-narrative {
+    align-items: center;
+    text-align: center;
+    order: 1;
+  }
+
+  .mockup-extension-card {
+    order: 2;
+    max-width: 300px;
+  }
+
+  .narrative-headline {
+    font-size: 22px;
+  }
+
+  /* Comparison cards — stack */
+  .comparison-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .comparison-card {
+    padding: 28px 22px;
+  }
+
+  /* Feature tabs panel — stack */
+  .feature-tab-panel.active {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 28px 20px;
+  }
+
+  .feature-tab-btn {
+    min-width: 130px;
+    padding: 14px 12px;
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  .feature-tab-btn svg {
+    display: none;
+  }
+
+  /* Security grid — single column */
+  .security-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Comparison matrix — hide on small screens, show scroll hint */
+  .comparison-matrix-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .comparison-matrix-wrap table {
+    min-width: 560px;
+  }
+
+  /* CTA Banner */
+  .cta-banner {
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  .cta-banner-title {
+    font-size: clamp(24px, 6vw, 36px);
+  }
+
+  .cta-banner-actions {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .cta-banner-actions .btn {
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+  }
+
+  /* Developer card */
+  .dev-signature-card {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    padding: 28px 20px;
+  }
+
+  .dev-info {
+    align-items: center;
+  }
+
+  .dev-social-links {
+    justify-content: center;
+  }
+
+  /* Footer */
+  .footer-inner,
+  .footer-grid {
+    flex-direction: column;
+    gap: 24px;
+    text-align: center;
+  }
+
+  .footer-col {
+    align-items: center;
+  }
+
+  .footer-links {
+    align-items: center;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  /* Section headings */
+  .section-title {
+    font-size: clamp(26px, 7vw, 36px);
+  }
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVE — PHONE (max-width: 480px)
+   ========================================================================== */
+@media (max-width: 480px) {
+
+  /* Global container padding */
+  .container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .section {
+    padding: 56px 0;
+  }
+
+  /* Hero */
+  .hero-section {
+    padding-top: 90px;
+    padding-bottom: 48px;
+  }
+
+  .hero-title {
+    font-size: clamp(28px, 10vw, 40px);
+    line-height: 1.2;
+  }
+
+  .hero-subtitle {
+    font-size: 15px;
+  }
+
+  /* Showcase */
+  .showcase-body {
+    padding: 20px 16px;
+  }
+
+  .window-header {
+    height: 36px;
+    padding: 0 12px;
+  }
+
+  /* Feature tabs */
+  .feature-tab-panel.active {
+    padding: 20px 16px;
+  }
+
+  .feature-tab-btn {
+    min-width: 100px;
+    padding: 12px 10px;
+    font-size: 11px;
+  }
+
+  /* Comparison cards */
+  .comparison-card {
+    padding: 22px 16px;
+  }
+
+  .comparison-heading {
+    font-size: 20px;
+  }
+
+  /* Security cards */
+  .security-card {
+    padding: 20px;
+  }
+
+  /* Nav */
+  .nav-inner,
+  .nav-container {
+    height: 60px;
+  }
+
+  .brand-link {
+    font-size: 17px;
+  }
+
+  /* CTA */
+  .cta-banner {
+    padding: 32px 16px;
+  }
+
+  /* Dev card */
+  .dev-avatar {
+    width: 64px;
+    height: 64px;
+  }
+
+  /* Policy main padding */
+  .policy-main {
+    padding-top: 90px;
+  }
+
+  .policy-section-card {
+    flex-direction: column;
+    padding: 20px 16px;
+    gap: 14px;
+  }
+}
