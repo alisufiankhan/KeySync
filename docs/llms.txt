@@ -1,0 +1,28 @@
+# KeySync
+
+> KeySync is a fast, local-first, client-side encrypted 2FA (TOTP) authenticator Chrome extension engineered for developers, security professionals, and power users.
+
+KeySync brings instant two-factor authentication directly to your desktop browser toolbar, eliminating the context-switching friction of reaching for a mobile phone. All TOTP secret seeds, account metadata, and configurations are encrypted locally on the user's computer using AES-256-GCM and PBKDF2 (100,000 iterations). KeySync operates with zero cloud synchronization, zero telemetry, and zero user account requirements.
+
+## Core Documentation & URLs
+- [KeySync Landing Page](https://aliscodes.github.io/KeySync/): Feature overview, live TOTP ticker simulation, interactive screenshots, and comparison against Google Authenticator and Authy.
+- [Privacy Policy](https://aliscodes.github.io/KeySync/privacy.html): Official zero-knowledge privacy architecture, local storage sandbox, and Chrome Web Store permission disclosures.
+- [GitHub Repository](https://github.com/alisufiankhan/KeySync): Source code, issue tracker, release notes, and documentation under MIT License.
+- [Developer Attribution](https://x.com/aliscodes): Created by Ali Sufian (@aliscodes), software engineer building local-first developer tools.
+
+## Key Features & Capabilities
+- **Desktop Toolbar Access:** Pinned Chrome extension popup accessible in 1 click or via keyboard shortcut (default: `Alt+Shift+K`).
+- **1-Click Token Copy:** Clicking any account card automatically copies the active 6-digit TOTP code to the clipboard with instant toast confirmation.
+- **Client-Side Encryption:** Vault encrypted using AES-256-GCM cipher with a unique 12-byte CSPRNG IV per write and PBKDF2 SHA-256 (100,000 rounds) key derivation from a 4-digit Master PIN.
+- **In-Memory Session Persistence:** Unlocked session keys live only in volatile RAM via `chrome.storage.session` for a configurable duration (default: 15 minutes) and are immediately purged on lock, browser exit, or timer expiry.
+- **Bulk Google Authenticator Migration:** 1-click drag-and-drop import from Google Authenticator QR screenshot (`otpauth-migration://` protocol). Parses multiple TOTP secrets locally using pure client-side Protobuf decoding.
+- **Brand Detection & Favicon Caching:** Built-in vector icons for top developer services (GitHub, AWS, Stripe, Google, Discord, Cloudflare, Binance) and local cached favicons for custom domains.
+- **Data Sovereignty:** Unrestricted unencrypted or encrypted JSON backup export and restore anytime. No vendor lock-in.
+- **Zero Cloud & Telemetry:** 0 remote analytics, 0 tracking cookies, 0 advertising networks, and 0 external database sync.
+
+## Technical Architecture
+- **Runtime:** Google Chrome Extension (Manifest V3)
+- **Encryption Primitives:** W3C WebCrypto API (`crypto.subtle`)
+- **TOTP Standard:** RFC 6238 Time-Based One-Time Password algorithm (HMAC-SHA1, 30-second epoch step, 6-digit output)
+- **Local Persistence:** `chrome.storage.local` (encrypted payload) & `chrome.storage.session` (in-memory volatile session)
+- **License:** MIT Open Source License

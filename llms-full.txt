@@ -1,0 +1,90 @@
+# KeySync: Comprehensive Project & Technical Context
+
+> Project Name: KeySync  
+> Type: Google Chrome Extension (Manifest V3)  
+> Purpose: Fast, local-first, client-side encrypted 2FA (TOTP) authenticator for Chrome  
+> Creator: Ali Sufian (@aliscodes, https://x.com/aliscodes)  
+> License: MIT License  
+> Official Website: https://aliscodes.github.io/KeySync/  
+> Privacy Policy: https://aliscodes.github.io/KeySync/privacy.html  
+> Source Repository: https://github.com/alisufiankhan/KeySync  
+
+---
+
+## 1. Executive Summary
+
+KeySync is an offline-first, client-side encrypted two-factor authentication (2FA) Chrome extension designed specifically for engineers, developers, and desktop power users. Authenticators were originally built for mobile smartphones in 2011; modern desktop workers repeatedly interrupt their workflow by picking up mobile phones, unlocking biometric locks, and racing 30-second timers.
+
+KeySync solves this by offering instant 1-click access directly inside the Google Chrome toolbar. Clicking any code immediately injects the valid 6-digit TOTP code into the clipboard.
+
+---
+
+## 2. Cryptographic Security Architecture
+
+KeySync operates under a strict Zero-Knowledge, local-only threat model:
+
+1. **Hardware-Accelerated WebCrypto Primitives:**
+   All cryptographic operations execute on the local CPU via the browser's standard W3C WebCrypto API (`crypto.subtle`). No external or unvetted third-party JavaScript crypto libraries are bundled for core operations.
+
+2. **Master PIN & Key Derivation:**
+   - The user configures a 4-digit Master PIN.
+   - The PIN is derived into a 256-bit symmetric encryption key using PBKDF2 with SHA-256 and 100,000 iterations.
+   - A unique 16-byte random salt is generated via `crypto.getRandomValues()` during vault setup and persisted in local storage.
+
+3. **AES-256-GCM Vault Encryption:**
+   - Account secrets, service names, and usernames are stored in an encrypted payload object.
+   - Encryption uses authenticated AES-256-GCM.
+   - A fresh 12-byte initialization vector (IV) is cryptographically generated on every write operation.
+
+4. **In-Memory Volatile Session Storage:**
+   - Chrome Manifest V3's `chrome.storage.session` API keeps the derived AES key in volatile RAM while the browser session remains active.
+   - The session key is never committed to persistent disk storage.
+   - An auto-lock timer (configurable: 5m, 15m, 30m, 1h, 4h, or never) automatically discards the session key from RAM upon inactivity.
+   - Manually clicking "Lock Vault" or closing the browser immediately purges the session key.
+
+5. **Zero Cloud Sync & Telemetry:**
+   - KeySync contains no analytics SDKs (no Google Analytics, Mixpanel, Sentry, or PostHog).
+   - KeySync communicates with no cloud servers, remote databases, or sync relays.
+   - The only optional network call is fetching public favicon icons for unrecognized domains from Google's public favicon endpoint (`https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=...&size=64`). No account seeds or identifiers are included in these queries, and the resulting images are cached locally.
+
+---
+
+## 3. Core Features
+
+- **Instant 1-Click Copy:** Clicking any account card copies the code directly to the clipboard with clean toast notifications.
+- **Bulk Google Authenticator Migration:** Users can export their accounts from Google Authenticator into a QR code, capture a screenshot, and drag-and-drop the image into KeySync. The app parses the `otpauth-migration://` protocol locally with client-side Protobuf decoding and imports all accounts simultaneously.
+- **Live Circular Countdown Ticker:** Visual SVG countdown ring indicating remaining seconds in the 30-second TOTP epoch window. Turns amber below 10 seconds and red below 5 seconds.
+- **Brand Intelligence:** Automatic brand recognition for 50+ popular services (GitHub, Stripe, AWS, Cloudflare, Discord, Binance, Supabase, Google, etc.) with high-resolution vector SVGs.
+- **Real-Time Instant Search:** Filter accounts by service name or username as you type.
+- **Full Vault Data Sovereignty:** 1-click JSON backup export (unencrypted or encrypted) and restore functionality.
+
+---
+
+## 4. Comparison with Alternatives
+
+| Feature | KeySync | Google Authenticator | Twilio Authy | Cloud Password Managers |
+|---|---|---|---|---|
+| **Platform Access** | Native Chrome Toolbar | Mobile Only | Desktop App Deprecated | Browser Extension |
+| **Storage Model** | 100% Local Device Only | Synced to Google Account | Synced to Twilio Cloud | Remote Cloud Vaults |
+| **Setup Friction** | Instant, No Login | Requires Google Account | Requires Phone Verification | Master Password & Account |
+| **Google Auth Migration** | 1-Click QR Screenshot Drop | N/A | Manual Entry Only | Manual Entry Only |
+| **Pricing** | Free & Open Source (MIT) | Free (Proprietary) | Free (Proprietary) | $36 – $60 / year |
+| **Data Portability** | Full JSON Backup Export | QR Code Screen Only | Locked In | Varies |
+
+---
+
+## 5. Chrome Web Store Permissions
+
+KeySync requests only the minimal necessary permissions under Manifest V3:
+- `storage`: Required to store encrypted vault data locally (`chrome.storage.local`) and keep session keys in volatile RAM (`chrome.storage.session`).
+- `alarms`: Powers the configurable inactivity auto-lock timer.
+- `clipboardWrite`: Enables 1-click copying of 6-digit TOTP codes directly to the user's clipboard upon clicking a card.
+
+---
+
+## 6. Official Links & Socials
+
+- Website: https://aliscodes.github.io/KeySync/
+- Privacy Policy: https://aliscodes.github.io/KeySync/privacy.html
+- Developer: Ali Sufian (@aliscodes on X: https://x.com/aliscodes)
+- GitHub Repository: https://github.com/alisufiankhan/KeySync
