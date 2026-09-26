@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "KeySync - TOTP Authenticator",
+  "name": "KeySync - 2FA Authenticator",
   "version": "1.0.0",
   "description": "Secure, local-only 2FA TOTP authenticator with PIN encryption and Google Authenticator QR import.",
   "action": {

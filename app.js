@@ -106,9 +106,101 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 5. Dynamic Year
+  // 5. Mobile Navigation Drawer Toggle
+  const mobileToggle = document.getElementById('mobileMenuToggle') || document.getElementById('mobile-menu-toggle');
+  const mobileDrawer = document.getElementById('mobileNavDrawer') || document.getElementById('mobile-nav-drawer');
+  const mobileLinks = document.querySelectorAll('.mobile-nav-link, .mobile-nav-item, .mobile-drawer-cta, .mobile-btn-full');
+
+  if (mobileToggle && mobileDrawer) {
+    const toggleMenu = (open) => {
+      const shouldOpen = open !== undefined ? open : !mobileDrawer.classList.contains('open');
+      mobileDrawer.classList.toggle('open', shouldOpen);
+      mobileToggle.classList.toggle('open', shouldOpen);
+      mobileToggle.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+      document.body.classList.toggle('menu-locked', shouldOpen);
+    };
+
+    mobileToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMenu();
+    });
+
+    // Close on link click
+    mobileLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        toggleMenu(false);
+      });
+    });
+
+    // Close on click outside
+    document.addEventListener('click', (e) => {
+      if (mobileDrawer.classList.contains('open') && !mobileDrawer.contains(e.target) && !mobileToggle.contains(e.target)) {
+        toggleMenu(false);
+      }
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && mobileDrawer.classList.contains('open')) {
+        toggleMenu(false);
+      }
+    });
+  }
+
+  // 6. Mobile Comparison Matrix Competitor Switcher
+  const competitorBtns = document.querySelectorAll('.matrix-switch-btn');
+  const competitorDisplays = document.querySelectorAll('.competitor-name-display');
+  const competitorVals = document.querySelectorAll('.competitor-val');
+
+  const competitorNames = {
+    google: 'Google Auth',
+    authy: 'Twilio Authy',
+    cloud: 'Cloud Vaults'
+  };
+
+  competitorBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const compKey = btn.getAttribute('data-competitor');
+      
+      // Update buttons
+      competitorBtns.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+
+      // Update name display
+      competitorDisplays.forEach(el => {
+        el.textContent = competitorNames[compKey] || compKey;
+      });
+
+      // Update verdict values
+      competitorVals.forEach(valEl => {
+        const valText = valEl.getAttribute(`data-${compKey}`) || '';
+        const textSpan = valEl.querySelector('.val-text');
+        if (textSpan) {
+          textSpan.textContent = valText;
+        }
+
+        // Adjust loss vs neutral verdict style
+        if (valText.toLowerCase().includes('native') || valText.toLowerCase().includes('free')) {
+          valEl.className = 'matrix-brand-verdict verdict-neutral competitor-val';
+          const icon = valEl.querySelector('svg');
+          if (icon) icon.style.display = 'none';
+        } else {
+          valEl.className = 'matrix-brand-verdict verdict-loss competitor-val';
+          const icon = valEl.querySelector('svg');
+          if (icon) icon.style.display = 'inline-block';
+        }
+      });
+    });
+  });
+
+  // 7. Dynamic Year
   const yearEl = document.getElementById('current-year');
   if (yearEl) {
     yearEl.textContent = new Date().getFullYear();
   }
 });
+
